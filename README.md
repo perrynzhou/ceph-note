@@ -6,4 +6,5 @@
 
 
 ### 技术分享
+- [Ceph Nautilus集群部署和调试](./document/md/Ceph-Nautilus集群部署和调试.md)
 - [Ceph架构概览](./document/md/Ceph架构概览.md)

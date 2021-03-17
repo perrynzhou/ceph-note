@@ -72,6 +72,7 @@ yum install -y https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-depl
     id:     bd5d7c6b-d450-4028-904f-76c8fc3505dd
     health: HEALTH_WARN
     		// 这里出现这个问题需要安装 typeing库，这个依赖python3.更改yum为2.7,连接pyton到python3.6的二进制，执行curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py
+        // yum install python2-typing
             Module 'volumes' has failed dependency: No module named typing
             OSD count 0 < osd_pool_default_size 3
  

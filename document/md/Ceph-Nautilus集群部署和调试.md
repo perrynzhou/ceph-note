@@ -62,7 +62,17 @@ yum install -y https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-depl
 [cephfsd@node1 ceph-cluster]$ sudo ceph mgr module enable dashboard --force
 [cephfsd@node1 ceph-cluster]$ ceph-deploy admin  node1 node2 node3
 //安装debug调试信息
-[cephfsd@node1 ceph-cluster]$ yum install ceph-debuginfo.x86_64 -y
+[cephfsd@node1 ceph-cluster]$ yum install -yceph-debuginfo.x86_64 -y
+//安装ceph dashboard
+[cephfsd@node1 ceph-cluster]$ yum install -y ceph-mgr-dashboard
+[cephfsd@node1 ceph-cluster]$ ceph mgr module enable dashboard --force 
+[cephfsd@node1 ceph-cluster]$ ceph mgr module ls 
+[cephfsd@node1 ceph-cluster]$ ceph dashboard create-self-signed-cert 
+[cephfsd@node1 ceph-cluster]$ ceph config set mgr mgr/dashboard/ssl false
+//其中的admin和admin分别是dashboard的用户和密码
+// echo "admin">pass
+[cephfsd@node1 ceph-cluster]$ ceph dashboard ac-user-create -i pass admin  administrator
+// 浏览器输入 https://node1:8443
 ```
 #### ceph集群验证
 

@@ -176,6 +176,7 @@ ID  CLASS WEIGHT   TYPE NAME         STATUS REWEIGHT PRI-AFF
 
 #### 客户端挂载cephfs
 
+- ceph-fuse
 ```
 // 拷贝集群节点中的/etc/ceph/ceph.conf到客户端节点的/etc/ceph目录下
 [cephfsd@node1 ceph-cluster]$ scp -r /etc/ceph/ceph.conf  ceph@172.16.84.54:~/
@@ -183,7 +184,23 @@ ID  CLASS WEIGHT   TYPE NAME         STATUS REWEIGHT PRI-AFF
 [cephfsd@node1 ceph-cluster]$ scp -r ceph.client.admin.keyring.conf  ceph@172.16.84.54:~/
 ceph-fuse -m 172.16.84.37:6789 /mnt/cephfs/
 ```
+- kernel fuse
 
+```
+// ceph.client.admin.keyring  ceph.conf 需要从ceph-deploy部署目录生成的的文件拷贝客户端172.16.84.54:/etc/ceph目录
+root@172.16.84.54 /etc/ceph $ ls
+ceph.client.admin.keyring  ceph.conf
+root@172.16.84.54 /etc/ceph $ cat ceph.client.admin.keyring 
+[client.admin]
+        key = AQAVqlJgcLrYFRAAuHFPSqhIg1/gvFFwYKulzA==
+        caps mds = "allow *"
+        caps mgr = "allow *"
+        caps mon = "allow *"
+        caps osd = "allow *"
+        
+// name=admin,secret=AQAVqlJgcLrYFRAAuHFPSqhIg1/gvFFwYKulzA== 分别对应client.admin中的admin;key对应的是secret
+root@172.16.84.54 /etc/ceph $ mount -t ceph 172.16.84.37:6789:/ /mnt/cephfs -o name=admin,secret=AQAVqlJgcLrYFRAAuHFPSqhIg1/gvFFwYKulzA==
+```
 #### 安装netdata监控主机
 
 ```

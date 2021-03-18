@@ -58,6 +58,8 @@ yum install -y https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-depl
 
 
 [cephfsd@node1 ceph-cluster]$ ceph-deploy mgr create node1 node2 node3
+
+[cephfsd@node1 ceph-cluster]$ ceph-deploy mds create node1 node2 node3
 //启用dashboard
 [cephfsd@node1 ceph-cluster]$ ceph-deploy admin  node1 node2 node3
 //安装debug调试信息

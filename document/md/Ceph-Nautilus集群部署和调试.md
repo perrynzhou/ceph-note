@@ -100,14 +100,19 @@ yum install -y https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-depl
 #### ceph添加osd
 
 ```
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node1  --data /dev/sdi 
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node2  --data /dev/sdi
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node3  --data /dev/sdi
+
+
+[cephfsd@node1 ceph-cluster]$ vgcreate cache /dev/sdf1
+[cephfsd@node1 ceph-cluster]$ lvcreate --size 100G --name db-0 cache
+[cephfsd@node1 ceph-cluster]$ lvcreate --size 40G --name  wal-0 cache
+[cephfsd@node1 ceph-cluster]$ lvcreate --size 100G --name db-1 cache
+[cephfsd@node1 ceph-cluster]$ lvcreate --size 40G --name  wal-1 cache
+[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create  --bluestore node1 --data  /dev/sda    --block-db cache/db-0 --block-wal cache/wal-0 
+[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create --bluestore node1 --data  /dev/sdf2    --block-db cache/db-1 --block-wal cache/wal-1 
 
 // ssd的osd
 [cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node1  --data /dev/sdf 
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node2  --data /dev/sdf
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node3  --data /dev/sdf
+
 ```
 
 #### ceph安装mds

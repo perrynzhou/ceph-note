@@ -59,10 +59,9 @@ yum install -y https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-depl
 
 [cephfsd@node1 ceph-cluster]$ ceph-deploy mgr create node1 node2 node3
 //启用dashboard
-[cephfsd@node1 ceph-cluster]$ sudo ceph mgr module enable dashboard --force
 [cephfsd@node1 ceph-cluster]$ ceph-deploy admin  node1 node2 node3
 //安装debug调试信息
-[cephfsd@node1 ceph-cluster]$ yum install -yceph-debuginfo.x86_64 -y
+[cephfsd@node1 ceph-cluster]$ yum install -y ceph-debuginfo.x86_64 -y
 //安装ceph dashboard
 [cephfsd@node1 ceph-cluster]$ yum install -y ceph-mgr-dashboard
 [cephfsd@node1 ceph-cluster]$ ceph mgr module enable dashboard --force 

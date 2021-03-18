@@ -102,17 +102,19 @@ yum install -y https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-depl
 ```
 
 
+// sdf是一个ssd磁盘，上面创建一个分区，用于存储rocksdb的wal和db部分
 [cephfsd@node1 ceph-cluster]$ vgcreate cache /dev/sdf1
+
 [cephfsd@node1 ceph-cluster]$ lvcreate --size 100G --name db-0 cache
 [cephfsd@node1 ceph-cluster]$ lvcreate --size 40G --name  wal-0 cache
+
 [cephfsd@node1 ceph-cluster]$ lvcreate --size 100G --name db-1 cache
 [cephfsd@node1 ceph-cluster]$ lvcreate --size 40G --name  wal-1 cache
+// hdd的osd
 [cephfsd@node1 ceph-cluster]$ ceph-deploy osd create  --bluestore node1 --data  /dev/sda    --block-db cache/db-0 --block-wal cache/wal-0 
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create --bluestore node1 --data  /dev/sdf2    --block-db cache/db-1 --block-wal cache/wal-1 
 
 // ssd的osd
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node1  --data /dev/sdf 
-
+[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create --bluestore node1 --data  /dev/sdf2    --block-db cache/db-1 --block-wal cache/wal-1 
 ```
 
 #### ceph安装mds

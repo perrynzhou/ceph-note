@@ -8,4 +8,4 @@
 ### 技术分享
 - [Ceph Nautilus集群部署和调试](./document/md/Ceph-Nautilus集群部署和调试.md)
 - [Ceph架构概览](./document/md/Ceph架构概览.md)
-- [Ceph架构概览](./document/md/关于BlueStore一些疑惑.md)
+- [关于BlueStore一些疑惑](./document/md/关于BlueStore一些疑惑.md)

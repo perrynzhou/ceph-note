@@ -31,7 +31,7 @@
 const string PREFIX_SUPER = "S";       // field -> value
 //保存Collection的元数据信息
 const string PREFIX_STAT = "T";        // field -> value(int64 array)
-// Collocation对应PG在BlueStore中的内存数据结构
+// Collocation对应PG在BlueStore中的内存数据结构，Cnode对应PG在BlueStore中的磁盘数据结构。
 const string PREFIX_COLL = "C";        // collection name -> cnode_t
 // 保存每个对象的元数据信息
 const string PREFIX_OBJ = "O";         // object name -> onode_t

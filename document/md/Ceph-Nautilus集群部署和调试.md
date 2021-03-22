@@ -58,11 +58,22 @@ yum install -y https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-depl
 
 
 [cephfsd@node1 ceph-cluster]$ ceph-deploy mgr create node1 node2 node3
+
+[cephfsd@node1 ceph-cluster]$ ceph-deploy mds create node1 node2 node3
 //启用dashboard
-[cephfsd@node1 ceph-cluster]$ sudo ceph mgr module enable dashboard --force
 [cephfsd@node1 ceph-cluster]$ ceph-deploy admin  node1 node2 node3
 //安装debug调试信息
-[cephfsd@node1 ceph-cluster]$ yum install ceph-debuginfo.x86_64 -y
+[cephfsd@node1 ceph-cluster]$ yum install -y ceph-debuginfo.x86_64 -y
+//安装ceph dashboard
+[cephfsd@node1 ceph-cluster]$ yum install -y ceph-mgr-dashboard
+[cephfsd@node1 ceph-cluster]$ ceph mgr module enable dashboard --force 
+[cephfsd@node1 ceph-cluster]$ ceph mgr module ls 
+[cephfsd@node1 ceph-cluster]$ ceph dashboard create-self-signed-cert 
+[cephfsd@node1 ceph-cluster]$ ceph config set mgr mgr/dashboard/ssl false
+//其中的admin和admin分别是dashboard的用户和密码
+// echo "admin">pass
+[cephfsd@node1 ceph-cluster]$ ceph dashboard ac-user-create -i pass admin  administrator
+// 浏览器输入 https://node1:8443
 ```
 #### ceph集群验证
 
@@ -72,6 +83,7 @@ yum install -y https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-depl
     id:     bd5d7c6b-d450-4028-904f-76c8fc3505dd
     health: HEALTH_WARN
     		// 这里出现这个问题需要安装 typeing库，这个依赖python3.更改yum为2.7,连接pyton到python3.6的二进制，执行curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py
+        // yum install python2-typing
             Module 'volumes' has failed dependency: No module named typing
             OSD count 0 < osd_pool_default_size 3
  
@@ -90,14 +102,21 @@ yum install -y https://mirrors.aliyun.com/ceph/rpm-nautilus/el7/noarch/ceph-depl
 #### ceph添加osd
 
 ```
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node1  --data /dev/sdi 
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node2  --data /dev/sdi
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node3  --data /dev/sdi
+
+
+// sdf是一个ssd磁盘，上面创建一个分区，用于存储rocksdb的wal和db部分
+[cephfsd@node1 ceph-cluster]$ vgcreate cache /dev/sdf1
+
+[cephfsd@node1 ceph-cluster]$ lvcreate --size 100G --name db-0 cache
+[cephfsd@node1 ceph-cluster]$ lvcreate --size 40G --name  wal-0 cache
+
+[cephfsd@node1 ceph-cluster]$ lvcreate --size 100G --name db-1 cache
+[cephfsd@node1 ceph-cluster]$ lvcreate --size 40G --name  wal-1 cache
+// hdd的osd
+[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create  --bluestore node1 --data  /dev/sda    --block-db cache/db-0 --block-wal cache/wal-0 
 
 // ssd的osd
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node1  --data /dev/sdf 
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node2  --data /dev/sdf
-[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create node3  --data /dev/sdf
+[cephfsd@node1 ceph-cluster]$ ceph-deploy osd create --bluestore node1 --data  /dev/sdf2    --block-db cache/db-1 --block-wal cache/wal-1 
 ```
 
 #### ceph安装mds
@@ -166,6 +185,7 @@ ID  CLASS WEIGHT   TYPE NAME         STATUS REWEIGHT PRI-AFF
 
 #### 客户端挂载cephfs
 
+- ceph-fuse
 ```
 // 拷贝集群节点中的/etc/ceph/ceph.conf到客户端节点的/etc/ceph目录下
 [cephfsd@node1 ceph-cluster]$ scp -r /etc/ceph/ceph.conf  ceph@172.16.84.54:~/
@@ -173,7 +193,23 @@ ID  CLASS WEIGHT   TYPE NAME         STATUS REWEIGHT PRI-AFF
 [cephfsd@node1 ceph-cluster]$ scp -r ceph.client.admin.keyring.conf  ceph@172.16.84.54:~/
 ceph-fuse -m 172.16.84.37:6789 /mnt/cephfs/
 ```
+- kernel fuse
 
+```
+// ceph.client.admin.keyring  ceph.conf 需要从ceph-deploy部署目录生成的的文件拷贝客户端172.16.84.54:/etc/ceph目录
+root@172.16.84.54 /etc/ceph $ ls
+ceph.client.admin.keyring  ceph.conf
+root@172.16.84.54 /etc/ceph $ cat ceph.client.admin.keyring 
+[client.admin]
+        key = AQAVqlJgcLrYFRAAuHFPSqhIg1/gvFFwYKulzA==
+        caps mds = "allow *"
+        caps mgr = "allow *"
+        caps mon = "allow *"
+        caps osd = "allow *"
+        
+// name=admin,secret=AQAVqlJgcLrYFRAAuHFPSqhIg1/gvFFwYKulzA== 分别对应client.admin中的admin;key对应的是secret
+root@172.16.84.54 /etc/ceph $ mount -t ceph 172.16.84.37:6789:/ /mnt/cephfs -o name=admin,secret=AQAVqlJgcLrYFRAAuHFPSqhIg1/gvFFwYKulzA==
+```
 #### 安装netdata监控主机
 
 ```

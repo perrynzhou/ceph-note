@@ -159,8 +159,8 @@ ceph-deploy mds create  node1 node2 node3
 #### 创建mds的数据Pool和meta Pool
 
 ```
-[cephfsd@node1 ceph-cluster]$ sudo ceph osd pool create cephfs_data 64 64
-[cephfsd@node1 ceph-cluster]$ sudo ceph osd pool create cephfs_metadata 64 64
+[cephfsd@node1 ceph-cluster]$ sudo ceph osd pool create cephfs_data 128 128
+[cephfsd@node1 ceph-cluster]$ sudo ceph osd pool create cephfs_metadata 128 128
 [cephfsd@node1 ceph-cluster]$ sudo ceph osd pool set cephfs_metadata crush_rule fs-meta-disk
 [root@node1 ~]# ceph osd tree
 ID  CLASS WEIGHT   TYPE NAME         STATUS REWEIGHT PRI-AFF 
@@ -217,3 +217,80 @@ bash <(curl -Ss https://my-netdata.io/kickstart-static64.sh)
 在浏览器中输入:https://host:19999
 ```
 
+
+#### 使用Ceph RBD功能
+
+- 创建rbd
+
+```
+[root@node1 ~]#  ceph osd pool create ai-rbd 128 128
+pool 'ai-rbd' created
+[root@node1 ~]# ceph osd pool set ai-rbd crush_rule rbd-disk
+set pool 4 crush_rule to rbd-disk
+
+[root@node1 ~]# rbd pool init ai-rbd
+```
+
+- 查看 rbd
+```
+[root@node1 ~]# ceph osd lspools
+1 cephfs_data
+2 cephfs_metadata
+3 ai-rbd
+```
+- 创建rbd image
+```
+[root@node1 ~]#  rbd create rbd_data1 --pool ai-rbd --size 3096G --image-feature layering 
+[root@node1 ~]# rbd ls -l --pool ai-rbd
+NAME      SIZE    PARENT FMT PROT LOCK 
+rbd_data1 500 GiB          2           
+[root@node1 ~]# rbd --pool ai-rbd --image rbd_data1 info
+rbd image 'rbd_data1':
+        size 500 GiB in 128000 objects
+        order 22 (4 MiB objects)
+        snapshot_count: 0
+        id: 1419898976eb
+        block_name_prefix: rbd_data.1419898976eb
+        format: 2
+        features: layering
+        op_features: 
+        flags: 
+        create_timestamp: Tue Mar 23 15:46:06 2021
+        access_timestamp: Tue Mar 23 15:46:06 2021
+        modify_timestamp: Tue Mar 23 15:46:06 2021
+```
+
+- 客户端使用
+```
+// 服务节点的的ceph配置
+[admin@node1 ceph]$ ls
+ceph.client.admin.keyring  ceph.conf  rbdmap  tmphKNPRx
+// 172.16.84.54客户端节点，把ceph中配置拷贝到客户端节点下面的/etc/ceph中
+[admin@node1 ceph]$ scp -r ceph.client.admin.keyring  ceph.conf  admin@172.16.84.54:~/ceph
+
+
+// 在客户单节点执行
+root@172.16.84.54 /home/admin/ceph $ rbd --pool ai-rbd --image rbd_data1 info
+
+// 如果/dev/rbd0存在，就umap掉
+root@172.16.84.54 ~ $ rbd unmap /dev/rbd0
+
+// rbd map {pool-name}/{image-name}
+root@172.16.84.54 ~ $  rbd map ai-rbd/rbd_data1
+/dev/rbd0
+
+//客户端节点挂载
+
+root@172.16.84.54 ~ $ mount /dev/rbd0 /data/rbd  
+```
+
+#### Ceph RBD性能
+
+- 并发16个客户端写，每个客户端写入，RDB的pool使用的3个OSD，每个OSD对应磁盘类型是HDD
+
+  ![hdd_image](../images/hdd_image.JPG)
+
+#### Cephfs 性能
+
+- 并发16个客户端写数据到cephfs,cephfs 的metadata存放在ssd上，data存储在hdd上.	  
+  ![cephfs_image](../images/cephfs_image.JPG)

@@ -159,8 +159,8 @@ ceph-deploy mds create  node1 node2 node3
 #### 创建mds的数据Pool和meta Pool
 
 ```
-[cephfsd@node1 ceph-cluster]$ sudo ceph osd pool create cephfs_data 64 64
-[cephfsd@node1 ceph-cluster]$ sudo ceph osd pool create cephfs_metadata 64 64
+[cephfsd@node1 ceph-cluster]$ sudo ceph osd pool create cephfs_data 128 128
+[cephfsd@node1 ceph-cluster]$ sudo ceph osd pool create cephfs_metadata 128 128
 [cephfsd@node1 ceph-cluster]$ sudo ceph osd pool set cephfs_metadata crush_rule fs-meta-disk
 [root@node1 ~]# ceph osd tree
 ID  CLASS WEIGHT   TYPE NAME         STATUS REWEIGHT PRI-AFF 

@@ -1,0 +1,33 @@
+<tabset>
+  <tab i18n-heading
+       heading="Daemons List">
+    <cd-table [data]="daemons"
+              [columns]="columns"
+              columnMode="flex"
+              [hasDetails]="true"
+              (setExpandedRow)="setExpandedRow($event)"
+              (fetchData)="getDaemonList($event)">
+      <cd-rgw-daemon-details cdTableDetail
+                             [selection]="expandedRow">
+      </cd-rgw-daemon-details>
+    </cd-table>
+  </tab>
+
+  <tab i18n-heading
+       *ngIf="grafanaPermission.read"
+       heading="Overall Performance">
+    <cd-grafana [grafanaPath]="'rgw-overview?'"
+                uid="WAkugZpiz"
+                grafanaStyle="two">
+    </cd-grafana>
+  </tab>
+
+  <tab i18n-heading
+       *ngIf="grafanaPermission.read && isMultiSite"
+       heading="Sync Performance">
+    <cd-grafana [grafanaPath]="'radosgw-sync-overview?'"
+                uid="rgw-sync-overview"
+                grafanaStyle="two">
+    </cd-grafana>
+  </tab>
+</tabset>

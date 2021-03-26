@@ -1,0 +1,12 @@
+<cd-table [data]="data"
+          [columns]="columns"
+          [hasDetails]="true"
+          (updateSelection)="setExpandedRow($event)"
+          [selectionType]="'single'">
+  <cd-table-key-value cdTableDetail
+                      *ngIf="expandedRow"
+                      [data]="expandedRow"
+                      [renderObjects]="true"
+                      [hideKeys]="hideKeys">
+  </cd-table-key-value>
+</cd-table>

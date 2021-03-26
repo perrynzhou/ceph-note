@@ -1,3 +1,0 @@
-overrides:
-  ceph:
-    create_rbd_pool: false

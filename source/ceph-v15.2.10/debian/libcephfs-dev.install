@@ -1,0 +1,3 @@
+usr/include/cephfs/ceph_ll_client.h
+usr/include/cephfs/libcephfs.h
+usr/lib/libcephfs.so

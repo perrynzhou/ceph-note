@@ -1,0 +1,35 @@
+<tabset *ngIf="selection">
+  <tab i18n-heading
+       heading="Devices">
+    <cd-device-list [hostname]="selection['hostname']"></cd-device-list>
+  </tab>
+  <tab i18n-heading
+       heading="Inventory"
+       *ngIf="permissions.hosts.read">
+    <cd-inventory [hostname]="selectedHostname"></cd-inventory>
+  </tab>
+  <tab i18n-heading
+       heading="Daemons"
+       *ngIf="permissions.hosts.read">
+    <cd-service-daemon-list [hostname]="selectedHostname">
+    </cd-service-daemon-list>
+  </tab>
+  <tab i18n-heading
+       heading="Performance Details"
+       *ngIf="permissions.grafana.read">
+    <cd-grafana [grafanaPath]="'host-details?var-ceph_hosts=' + selectedHostname"
+                uid="rtOg0AiWz"
+                grafanaStyle="four">
+    </cd-grafana>
+  </tab>
+  <tab heading="Device health"
+       i18n-heading>
+    <cd-smart-list *ngIf="selectedHostname; else noHostname"
+                   [hostname]="selectedHostname"></cd-smart-list>
+  </tab>
+</tabset>
+
+<ng-template #noHostname>
+  <cd-alert-panel type="error"
+                  i18n>No hostname found.</cd-alert-panel>
+</ng-template>

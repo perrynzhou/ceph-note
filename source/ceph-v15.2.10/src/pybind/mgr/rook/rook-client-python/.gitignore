@@ -1,0 +1,11 @@
+.coverage
+.eggs/
+.idea/
+.mypy_cache/
+rook_client.egg-info/
+venv/
+downloads/
+__pycache__
+*.pyc
+rook_client/tests/test_README.py
+.tox

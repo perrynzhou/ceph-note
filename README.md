@@ -10,5 +10,6 @@
 - [Ceph架构概览](./document/md/Ceph架构概览.md)
 - [关于BlueStore一些疑惑](./document/md/关于BlueStore一些疑惑.md)
 - [ceph14-recovering速度控制](./document/md/ceph14-recovering速度控制.md)
-- [cCeph14或者更高版本硬件和内核选型](./document/md/Ceph14或者更高版本硬件和内核选型.md)
+- [Ceph14或者更高版本硬件和内核选型](./document/md/Ceph14或者更高版本硬件和内核选型.md)
+- [Ceph数据恢复](./document/md/Ceph数据恢复.md)
 

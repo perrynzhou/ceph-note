@@ -142,3 +142,18 @@ ceph tell osd.* injectargs --osd_recovery_sleep_hdd=0
     Rebalancing after osd.1 marked in
       [========......................]
 ```
+
+#### 完全保障客户端IO
+
+- 业务繁忙时完全关闭数据重建
+```
+ceph osd set norebalance
+ceph osd set norecover
+ceph osd set nobackfill
+```
+- 业务空闲时开启数据重建
+```
+ceph osd unset norebalance
+ceph osd unset norecover
+ceph osd unset nobackfill
+```

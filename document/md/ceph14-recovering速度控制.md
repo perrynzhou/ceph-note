@@ -80,8 +80,9 @@ ceph daemon osd.0 config show |egrep "osd_recovery_max_active|osd_recovery_op_pr
 
 //每个osd节点执行如下的参数调整或者通过ceph daemon osd.2 config set osd_recovery_op_priority 1 来设置
 ceph tell osd.* injectargs --osd_max_backfills=128
-ceph tell osd.* injectargs --osd_recovery_op_priority=0
+ceph tell osd.* injectargs --osd_recovery_op_priority=63
 ceph tell osd.* injectargs --osd_recovery_max_active=64
+ceph tell osd.* injectargs --osd_client_op_priority=3
 ceph tell osd.* injectargs --osd_recovery_max_single_start=64
 ceph tell osd.* injectargs --osd_recovery_sleep_hdd=0
 ```
@@ -90,7 +91,9 @@ ceph tell osd.* injectargs --osd_recovery_sleep_hdd=0
   - 这个参数默认值10. 由于一个osd承载了多个pg,所以一个osd中的pg很大可能需要做recovery.这个参数就是设置每个osd最多能让osd_max_backfills个pg进行同时做backfill.
   - recovery做修复，通过pull或者push的backfills的操作数一般是分开的，所以一般会考虑设置这个值大一些，用于primary osd通过push修复replica osd或者primary osd 通过pull方式修复replica osd
 - osd_recovery_op_priority
-  - 默认值10. osd修复操作的优先级, 可小于该值;这个值越小，recovery优先级越高。高优先级会导致集群的性能降级直到recovery结束
+  - 默认值10. osd修复操作的优先级, 可小于该值;这个值越大，recovery优先级越高。高优先级会导致集群的性能降级直到recovery结束
+- osd_client_op_priority
+  - 默认值63. 客户端IO操作的优先级,;这个值越大，客户端IO优先级越高。高优先级会导致集群的性能降级直到recovery结束
 - osd_recovery_max_active
   - 默认值15. 一个osd上可以承载多个pg, 可能好几个pg都需要recovery,这个值限定该osd最多同时有多少pg做recovery。
 - osd_recovery_max_single_start

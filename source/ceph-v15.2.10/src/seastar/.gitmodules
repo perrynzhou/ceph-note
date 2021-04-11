@@ -1,3 +1,0 @@
-[submodule "dpdk"]
-	path = dpdk
-	url = ../dpdk

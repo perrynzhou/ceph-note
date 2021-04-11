@@ -1,0 +1,27 @@
+version: 2.1
+jobs:
+  build_and_test:
+    parameters:
+      dialect:
+        description: C++ dialect to build with
+        default: gnu++20
+        type: string
+    docker:
+      - image: docker.io/scylladb/seastar-toolchain
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run:
+          command: |
+            ./configure.py --c++-dialect << parameters.dialect >>
+            ninja -C build/release -j1
+            ./test.py --mode release
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_and_test:
+          dialect: c++20
+      - build_and_test:
+          dialect: c++17

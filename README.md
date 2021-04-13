@@ -12,6 +12,6 @@
 - [ceph14-recovering速度控制](./document/md/ceph14-recovering速度控制.md)
 - [Ceph14或者更高版本硬件和内核选型](./document/md/Ceph14或者更高版本硬件和内核选型.md)
 - [Ceph数据恢复](./document/md/Ceph数据恢复.md)
-- [Ceph如何进行数据分布(持续更新)](./document/md/Ceph如何进行数据分布.md)
+- [读书笔记-Ceph如何进行数据分布](./document/md/读书笔记-Ceph如何进行数据分布.md)
 
 

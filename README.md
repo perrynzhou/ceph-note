@@ -15,7 +15,10 @@
 - [Ceph如何进行数据分布](./document/md/读书笔记-Ceph如何进行数据分布.md)
 
 - [ceph数据重平衡](./document/md/ceph数据重平衡.md)
+- [Ceph集群的大脑](./document/md/读书笔记-Ceph集群的大脑.md)
 - [主流分布式存储需要解决什么问题](./document/md/主流分布式存储需要解决什么问题.md)
+
+
 
 
 
